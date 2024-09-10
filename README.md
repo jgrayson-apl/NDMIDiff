@@ -1,11 +1,11 @@
-# Application Template
+# Moisture Index Difference
 
-Simple application template that uses the ArcGIS Maps SDK for JavaScript and Calcite Components.
+Calculate the relative or absolute difference of the Moisture Index between two dates. Normalized Difference Moisture Index - wetlands and moist areas appear blue whereas dry areas are represented by deep yellow and brown color. It is computed as NIR(B8)-SWIR1(B11)/NIR(B8)+SWIR1(B11).
+
+This application uses the ArcGIS Maps SDK for JavaScript and Calcite Components:
 
 - [ArcGIS Maps SDK for Javascript](https://developers.arcgis.com/javascript/latest/api-reference/)
 - [Calcite Components](https://developers.arcgis.com/calcite-design-system/components/)
-
-> *WARNING*: this is a new and evolving effort... things might not work as expected.
 
 ### Deploy
 
