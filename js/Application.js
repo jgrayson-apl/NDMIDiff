@@ -216,6 +216,7 @@ class Application extends AppBase {
     const compareRasters = {before: null, after: null};
     const fudgeFactor = 0.00000001;
 
+
     /**
      *
      * Landsat 8-9: https://www.arcgis.com/home/item.html?id=4ca13f0e4e29403fa68c46d188c4be73
