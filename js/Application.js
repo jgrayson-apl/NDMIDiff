@@ -216,6 +216,30 @@ class Application extends AppBase {
     const compareRasters = {before: null, after: null};
     const fudgeFactor = 0.00000001;
 
+    const relativeDifferenceRenderer = {
+      type: "raster-stretch",
+      stretchType: 'standard-deviation',
+      numberOfStandardDeviations: 1.0,
+      dynamicRangeAdjustment: true,
+      statistics: [],
+      outputMin: 0,
+      outputMax: 255,
+      colorRamp: {
+        type: "algorithmic",
+        fromColor: [255, 0, 0],
+        toColor: [0, 255, 0]
+      }
+    };
+
+    const absoluteDifferenceRenderer = {
+      type: "unique-value",
+      field: "value",
+      uniqueValueInfos: [
+        {value: 1, label: 'loss', symbol: {type: 'simple-fill', color: [255, 0, 0]}},
+        {value: 2, label: 'no change', symbol: {type: 'simple-fill', color: [128, 128, 128]}},
+        {value: 3, label: 'gain', symbol: {type: 'simple-fill', color: [0, 255, 0]}}
+      ]
+    };
 
     /**
      *
@@ -257,36 +281,14 @@ class Application extends AppBase {
 
           analysisLayer.set({
             rasterFunction: this.relativeDifferenceRF,
-            renderer:
-              {
-                type: "raster-stretch",
-                stretchType: 'standard-deviation',
-                numberOfStandardDeviations: 1.0,
-                dynamicRangeAdjustment: true,
-                statistics: [],
-                outputMin: 0,
-                outputMax: 255,
-                colorRamp: {
-                  type: "algorithmic",
-                  fromColor: [255, 0, 0],
-                  toColor: [0, 255, 0]
-                }
-              }
+            renderer: relativeDifferenceRenderer
           });
 
         } else {
 
           analysisLayer.set({
             rasterFunction: this.absoluteDifferenceRF,
-            renderer: {
-              type: "unique-value",
-              field: "value",
-              uniqueValueInfos: [
-                {value: 1, label: 'loss', symbol: {type: 'simple-fill', color: [255, 0, 0]}},
-                {value: 2, label: 'no change', symbol: {type: 'simple-fill', color: [128, 128, 128]}},
-                {value: 3, label: 'gain', symbol: {type: 'simple-fill', color: [0, 255, 0]}}
-              ]
-            }
+            renderer: absoluteDifferenceRenderer
           });
 
         }
@@ -298,6 +300,7 @@ class Application extends AppBase {
       calculateNDMIDifference();
       getDifference();
     });
+
     afterCompareView.addEventListener('date-change', ({detail: {rasterID}}) => {
       compareRasters.after = `$${ rasterID }`;
       calculateNDMIDifference();
@@ -311,7 +314,7 @@ class Application extends AppBase {
       afterCompareView.viewpoint = viewpoint;
     });
 
-    const imageryDatesByLocation = new ImageryDatesByLocation({imageryLayer: analysisLayer, view: view});
+    const imageryDatesByLocation = new ImageryDatesByLocation({view: view, imageryLayer: analysisLayer});
     imageryDatesByLocation.addEventListener('dates-change', ({detail: {availableImageryDates}}) => {
       beforeCompareView.availableImageryDates = availableImageryDates;
       afterCompareView.availableImageryDates = availableImageryDates;
