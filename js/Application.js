@@ -298,13 +298,13 @@ class Application extends AppBase {
     beforeCompareView.addEventListener('date-change', ({detail: {rasterID}}) => {
       compareRasters.before = `$${ rasterID }`;
       calculateNDMIDifference();
-      getDifference();
+      getDifferenceAtLocation();
     });
 
     afterCompareView.addEventListener('date-change', ({detail: {rasterID}}) => {
       compareRasters.after = `$${ rasterID }`;
       calculateNDMIDifference();
-      getDifference();
+      getDifferenceAtLocation();
     });
 
     await Promise.all([beforeCompareView.load(), afterCompareView.load()]);
@@ -344,7 +344,7 @@ class Application extends AppBase {
     view.map.add(identifyLayer);
 
     let _location;
-    const getDifference = async (location) => {
+    const getDifferenceAtLocation = async (location) => {
       _location = location || _location;
       if (_location) {
 
@@ -369,7 +369,7 @@ class Application extends AppBase {
 
     reactiveUtils.on(() => view, 'click', evt => {
       evt.stopPropagation();
-      getDifference(evt.mapPoint);
+      getDifferenceAtLocation(evt.mapPoint);
     });
 
   }
