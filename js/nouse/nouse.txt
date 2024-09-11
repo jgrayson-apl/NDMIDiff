@@ -1,0 +1,18 @@
+const FeatureSet = await $arcgis.import("esri/rest/support/FeatureSet");
+const attributeTable = FeatureSet.fromJSON({
+  displayFieldName: "",
+  fields: [
+    {name: "ObjectID", type: "esriFieldTypeOID", alias: "OID"},
+    {name: "Value", type: "esriFieldTypeInteger", alias: "Value"},
+    {name: "ClassName", type: "esriFieldTypeString", alias: "ClassName", length: 256},
+    {name: "Red", type: "esriFieldTypeInteger", alias: "Red"},
+    {name: "Green", type: "esriFieldTypeInteger", alias: "Green"},
+    {name: "Blue", type: "esriFieldTypeInteger", alias: "Blue"},
+    {name: "Alpha", type: "esriFieldTypeInteger", alias: "Alpha"}
+  ],
+  features: [
+    {attributes: {Value: 1, ClassName: "loss", Red: 255, Green: 0, Blue: 0, Alpha: 255}},
+    {attributes: {Value: 2, ClassName: "no change", Red: 128, Green: 128, Blue: 128, Alpha: 255}},
+    {attributes: {Value: 3, ClassName: "gain", Red: 0, Green: 255, Blue: 0, Alpha: 255}}
+  ]
+});

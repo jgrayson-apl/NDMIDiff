@@ -236,14 +236,14 @@ class Application extends AppBase {
           raster: compareRasters.after
         });
 
-        this.minusRF = rasterFunctionUtils.minus({
-          raster: afterNDMI,
-          raster2: beforeNDMI,
+        this.relativeDifferenceRF = rasterFunctionUtils.minus({
+          raster: beforeNDMI,
+          raster2: afterNDMI,
           outputPixelType: 'f32'
         });
 
-        const remapRF = rasterFunctionUtils.remap({
-          raster: this.minusRF,
+        this.absoluteDifferenceRF = rasterFunctionUtils.remap({
+          raster: this.relativeDifferenceRF,
           rangeMaps: [
             {range: [-2.0, -fudgeFactor], output: 1},
             {range: [-fudgeFactor, fudgeFactor], output: 2},
@@ -252,35 +252,43 @@ class Application extends AppBase {
           outputPixelType: 'u8'
         });
 
-        const absoluteColormap = rasterFunctionUtils.colormap({
-          raster: remapRF,
-          colormap: [
-            {value: 1, color: [255, 0, 0]},
-            {value: 2, color: [128, 128, 128]},
-            {value: 3, color: [0, 255, 0]}
-          ],
-          outputPixelType: 'u8'
-        });
+        if (differenceTypeOption.value === 'relative') {
 
-        const relativeStretch = rasterFunctionUtils.stretchStandardDeviation({
-          raster: this.minusRF,
-          dynamicRangeAdjustment: true,
-          numberOfStandardDeviations: 3.0,
-          outputMin: 0,
-          outputMax: 255,
-          outputPixelType: 'f32'
-        });
+          analysisLayer.set({
+            rasterFunction: this.relativeDifferenceRF,
+            renderer:
+              {
+                type: "raster-stretch",
+                stretchType: 'standard-deviation',
+                numberOfStandardDeviations: 1.0,
+                dynamicRangeAdjustment: true,
+                statistics: [],
+                outputMin: 0,
+                outputMax: 255,
+                colorRamp: {
+                  type: "algorithmic",
+                  fromColor: [255, 0, 0],
+                  toColor: [0, 255, 0]
+                }
+              }
+          });
 
-        const relativeStretchColorramp = rasterFunctionUtils.colormap({
-          raster: relativeStretch,
-          colorRampName: 'red-to-green',
-          outputPixelType: 'f32'
-        });
+        } else {
 
-        analysisLayer.set({
-          rasterFunction: differenceTypeOption.value === 'relative' ? relativeStretchColorramp : absoluteColormap
-        });
+          analysisLayer.set({
+            rasterFunction: this.absoluteDifferenceRF,
+            renderer: {
+              type: "unique-value",
+              field: "value",
+              uniqueValueInfos: [
+                {value: 1, label: 'loss', symbol: {type: 'simple-fill', color: [255, 0, 0]}},
+                {value: 2, label: 'no change', symbol: {type: 'simple-fill', color: [128, 128, 128]}},
+                {value: 3, label: 'gain', symbol: {type: 'simple-fill', color: [0, 255, 0]}}
+              ]
+            }
+          });
 
+        }
       }
     };
 
@@ -338,8 +346,8 @@ class Application extends AppBase {
 
         const identifyResult = await analysisLayer.identify({
           geometry: _location,
-          pixelSize: analysisLayer.serviceRasterInfo.pixelSize,
-          rasterFunction: this.minusRF,
+          pixelSize: analysisLayer.rasterInfo.pixelSize,
+          rasterFunction: this.relativeDifferenceRF,
           returnGeometry: false,
           returnCatalogItems: false,
           returnPixelValues: true,
