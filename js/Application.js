@@ -209,7 +209,7 @@ class Application extends AppBase {
 
     const differenceTypeOption = document.getElementById('difference-type-option');
     differenceTypeOption.addEventListener('calciteSegmentedControlChange', () => {
-      compareNDMI();
+      calculateNDMIDifference();
     });
 
     const rasterFunctionUtils = await $arcgis.import("esri/layers/support/rasterFunctionUtils");
@@ -224,7 +224,7 @@ class Application extends AppBase {
      * https://developers.arcgis.com/javascript/latest/api-reference/esri-layers-support-rasterFunctionUtils.html#bandArithmeticNDMI
      *
      */
-    const compareNDMI = () => {
+    const calculateNDMIDifference = () => {
 
       if (compareRasters.before && compareRasters.after) {
 
@@ -295,12 +295,12 @@ class Application extends AppBase {
 
     beforeCompareView.addEventListener('date-change', ({detail: {rasterID}}) => {
       compareRasters.before = `$${ rasterID }`;
-      compareNDMI();
+      calculateNDMIDifference();
       getDifference();
     });
     afterCompareView.addEventListener('date-change', ({detail: {rasterID}}) => {
       compareRasters.after = `$${ rasterID }`;
-      compareNDMI();
+      calculateNDMIDifference();
       getDifference();
     });
 
