@@ -221,7 +221,7 @@ class Application extends AppBase {
       stretchType: 'standard-deviation',
       numberOfStandardDeviations: 1.0,
       dynamicRangeAdjustment: true,
-      statistics: [],
+      statistics: [[-4.0, 4.0, 0.0, 0.25]],
       outputMin: 0,
       outputMax: 255,
       colorRamp: {
